@@ -4,3 +4,4 @@ flake8==3.5.0
 six==1.11.0
 testinfra==1.16.0
 yamllint==1.11.1
+dumb-init~=1.2
