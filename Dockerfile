@@ -23,13 +23,13 @@ RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == system
       info \
       sudo \
       which \
-      python-pip \
-      python-devel \
+      python3-pip \
+      python3-devel \
       @development \
  && yum clean all
 
 # Install Ansible via Pip.
-RUN pip install $pip_packages \
+RUN pip3 install $pip_packages \
   && sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers \
   && mkdir -p /etc/ansible \
   && echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
