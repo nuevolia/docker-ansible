@@ -19,6 +19,7 @@ RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == system
  && yum -y install deltarpm epel-release initscripts \
  && yum -y update \
  && yum -y install \
+      info \
       sudo \
       which \
       python-pip \
