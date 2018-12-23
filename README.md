@@ -1,6 +1,6 @@
 # Docker Image: CentOS-7 Ansible Test Image
 
-[![Docker Automated build](https://img.shields.io/docker/automated/nuevolia/docker-centos7-ansible.svg?maxAge=2592000)](https://hub.docker.com/r/nuevolia/docker-centos7-ansible/)
+[![Docker Automated build](https://img.shields.io/docker/automated/nuevolia/centos-ansible.svg?maxAge=2592000)](https://hub.docker.com/r/nuevolia/centos-ansible/)
 
 CentOS 7 Docker container for Ansible playbook and role testing.
 
