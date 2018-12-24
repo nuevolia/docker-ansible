@@ -8,7 +8,7 @@ before_install:
 
 script:
   # Test building Dockerfile.
-  - docker build -t docker-ansible .
+  - docker build -t nuevolia/docker-ansible:ubuntu1604 -f Dockerfile.ubuntu1604 ${PWD}
 
   # Test running the container.
   - docker run --name test-container -d --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro docker-ansible
