@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04 AS base
 
 LABEL maintainer.name="Fabien Zarifian"
 LABEL maintainer.email="fabien.zarifian@nuevolia.com"
@@ -14,10 +14,13 @@ ENV BASE_LANGUAGE=${BASE_LANGUAGE:-fr_FR} \
 RUN set -xe \
     && BASE_LANG="${BASE_LANGUAGE}.${BASE_CHARSET}" \
     && apt-get update -yqq \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y apt-transport-https ca-certificates curl \
-         locales git vim unzip gnupg2 lsb-release sudo software-properties-common python3-pip jq \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl \
+         locales git vim unzip gnupg2 lsb-release sudo software-properties-common jq \
     && localedef -i ${BASE_LANGUAGE} -c -f ${BASE_CHARSET} -A /usr/share/locale/locale.alias ${BASE_LANG}
-ENV LANG ${BASE_LANG}
+
+ENV LANG=${BASE_LANG} \
+    LC_MESSAGES="C" \
+    LANGUAGE=${BASE_LANGUAGE}
 
 # Apt Dependencies
 RUN echo "# Installing apt repositories...\n" \
@@ -29,19 +32,20 @@ RUN echo "# Installing apt repositories...\n" \
     && add-apt-repository "deb [arch=amd64] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main"
 
 # Install apt_packages
-RUN set -xe \
-    && apt-get update -yq \
-    && DEBIAN_FRONTEND=noninteractive apt-get -y install docker-ce postgresql-client-10 
-
-RUN python3 -m pip install --upgrade pip setuptools wheel
-
-COPY requirements.txt /root/requirement.txt
-RUN pip3 install -r /root/requirement.txt \
-  && rm /root/requirement.txt \
-  && sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers \
+ RUN set -xe \
+  && apt-get update -yq \
+  && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install docker-ce postgresql-client-10 \
+         python3-venv python3-pip \
+ && sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers \
   && mkdir -p /etc/ansible \
   && echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
 
+# Add app user/group and append it to docker group
+RUN groupadd -r app  \ 
+  && useradd --no-log-init -m -r -g app app \
+  && usermod -aG docker app
+
+FROM base AS builder
 # Install hashicorp tools (terraform, packer) 
 RUN echo "# Installing binary packages...\n" \
     && echo "## Download terraform ${BASE_TERRAFORM_VERSION}..." \
@@ -50,7 +54,7 @@ RUN echo "# Installing binary packages...\n" \
     && echo "## Download packer ${BASE_PACKER_VERSION}..." \
     && curl -LsS "https://releases.hashicorp.com/packer/${BASE_PACKER_VERSION}/packer_${BASE_PACKER_VERSION}_linux_amd64.zip" \
       -o /tmp/packer.zip \
-    && cd /usr/bin \
+    && mkdir -p /install/bin && cd /install/bin \
     && echo "## Unzip terraform ${BASE_TERRAFORM_VERSION}..." \
     && unzip /tmp/terraform.zip && rm /tmp/terraform.zip \
     && echo "## Unzip packer ${BASE_PACKER_VERSION}..." \
@@ -58,27 +62,18 @@ RUN echo "# Installing binary packages...\n" \
     && cd \
     && echo "## Install docker-compose (${BASE_DOCKER_COMPOSE_VERSION})" \
     && curl -LsS "https://github.com/docker/compose/releases/download/${BASE_DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" \
-      -o /usr/bin/docker-compose \
-    && chmod +x /usr/bin/docker-compose
+      -o /install/bin/docker-compose \
+    && chmod +x /install/bin/docker-compose
 
-# Add app user/group and append it to docker group
-RUN groupadd -r app  \ 
-  && useradd --no-log-init -m -r -g app app \
-  && usermod -aG docker app
-
-# apt-cleanup
-RUN rm -rf /var/lib/apt/lists/*
-
-# change user 
-USER app
-
-# Check installed as user app
+FROM base
 RUN set -xe \
-  && curl --version \
-  && terraform --version \
-  && ansible --version \
-  && docker-compose --version \
-  && packer --version \
-  && which dumb-init
-  
-ENTRYPOINT [ "/usr/local/bin/dumb-init", "--" ]
+  && apt-get update -yq \
+  && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install build-essential python3-dev libssl-dev
+COPY --from=builder /install/bin /usr/local/bin
+COPY requirements.txt /root/requirement.txt
+RUN python3 -m pip install --no-cache -U pip setuptools wheel dumb-init~=1.2 \
+  && python3 -m pip install -r /root/requirement.txt \
+  && apt-get -y remove --purge build-essential python3-dev libssl-dev \
+  && apt-get -y autoremove \ 
+  && rm -rf /var/lib/apt/lists/*
+ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/usr/bin/python3" ]
