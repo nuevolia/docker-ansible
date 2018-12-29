@@ -76,4 +76,4 @@ RUN python3 -m pip install --no-cache -U pip setuptools wheel dumb-init~=1.2 \
   && apt-get -y remove --purge build-essential python3-dev libssl-dev \
   && apt-get -y autoremove \ 
   && rm -rf /var/lib/apt/lists/*
-ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/usr/bin/python3" ]
+ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/bin/bash", "-l" ]

@@ -38,4 +38,4 @@ RUN pip3 install -r /root/requirement.txt \
   && yum clean all
 
 VOLUME ["/sys/fs/cgroup"]
-ENTRYPOINT ["/usr/local/bin/dumb-init", "--", "/usr/bin/python3.6"]
+ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/bin/bash", "-l" ]

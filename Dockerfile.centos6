@@ -35,4 +35,4 @@ RUN pip install -r /root/requirement.txt \
   && yum clean all
 
 VOLUME ["/sys/fs/cgroup"]
-ENTRYPOINT ["/usr/local/bin/dumb-init", "--", "/usr/local/bin/python2.7"]
+ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/bin/bash", "-l" ]
