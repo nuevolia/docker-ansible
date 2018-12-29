@@ -14,6 +14,7 @@ ENV BASE_LANGUAGE=${BASE_LANGUAGE:-fr_FR} \
 RUN set -xe \
     && BASE_LANG="${BASE_LANGUAGE}.${BASE_CHARSET}" \
     && apt-get update -yqq \
+    && apt-get dist-upgrade --yqq \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl \
          locales git vim unzip gnupg2 lsb-release sudo software-properties-common jq \
     && localedef -i ${BASE_LANGUAGE} -c -f ${BASE_CHARSET} -A /usr/share/locale/locale.alias ${BASE_LANG}
