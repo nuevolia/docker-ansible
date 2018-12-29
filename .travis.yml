@@ -1,5 +1,5 @@
 ---
-dist: minimal
+language: minimal
 services: docker
 env:
   global:
@@ -13,7 +13,7 @@ env:
 
 before_install:
   # Upgrade Docker.
-  - sudo apt-get -yqq update
+  - sudo apt-get -q update
   - sudo apt-get -yq -o Dpkg::Options::="--force-confnew" install docker-ce
 
 script:
