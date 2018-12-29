@@ -10,7 +10,7 @@ This image is built on Docker Hub automatically any time the upstream OS contain
 
   1. [Install Docker](https://docs.docker.com/engine/installation/).
   2. `cd` into this directory.
-  3. Run `docker build -t centos7-ansible .`
+  3. Run `docker build -t docker-ansible .`
 
 ## How to Use
 

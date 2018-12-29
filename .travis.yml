@@ -1,14 +1,21 @@
 ---
+dist: minimal
 services: docker
+env:
+  global:
+    - DOCKER_ORGANISATION: nuevolia    
+    - DOCKER_REPOSITORY: java
+  matrix:
+    - DOCKER_BASE_IMAGE: centos7
+    - DOCKER_BASE_IMAGE: centos6
+    - DOCKER_BASE_IMAGE: ubuntu1804
+    - DOCKER_BASE_IMAGE: ubuntu1604
 
 before_install:
   # Upgrade Docker.
-  - sudo apt-get update
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  - sudo apt-get -yqq update
+  - sudo apt-get -yq -o Dpkg::Options::="--force-confnew" install docker-ce
 
 script:
-  # Test building Dockerfile.
-  - docker build -t nuevolia/docker-ansible:ubuntu1604 -f Dockerfile.ubuntu1604 ${PWD}
-
-  # Test running the container.
-  - docker run --name test-container --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro nuevolia/docker-ansible:ubuntu1604
+  - docker build -t ${DOCKER_ORGANISATION}/${DOCKER_REPOSITORY}:${DOCKER_BASE_IMAGE} -f Dockerfile.${DOCKER_BASE_IMAGE} ${PWD}
+  - docker run --name test-container --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${DOCKER_ORGANISATION}/${DOCKER_REPOSITORY}:${DOCKER_BASE_IMAGE}
