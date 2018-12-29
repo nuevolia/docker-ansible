@@ -5,7 +5,7 @@ LABEL maintainer.email="fabien.zarifian@nuevolia.com"
 
 ENV BASE_LANGUAGE=${BASE_LANGUAGE:-fr_FR} \
     BASE_CHARSET=${BASE_CHARSET:-UTF-8} \
-    BASE_TERRAFORM_VERSION=${BASE_TERRAFORM_VERSION:-0.11.10} \ 
+    BASE_TERRAFORM_VERSION=${BASE_TERRAFORM_VERSION:-0.11.10} \
     BASE_PACKER_VERSION=${BASE_PACKER_VERSION:-1.3.1} \
     BASE_DOCKER_COMPOSE_VERSION=${BASE_DOCKER_COMPOSE_VERSION:-1.22.0} \
     container=docker
@@ -13,8 +13,8 @@ ENV BASE_LANGUAGE=${BASE_LANGUAGE:-fr_FR} \
 # Set locales
 RUN set -xe \
     && BASE_LANG="${BASE_LANGUAGE}.${BASE_CHARSET}" \
-    && apt-get update -q \
-    && apt-get dist-upgrade --yqq \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl \
          locales git vim unzip gnupg2 lsb-release sudo software-properties-common jq \
     && localedef -i ${BASE_LANGUAGE} -c -f ${BASE_CHARSET} -A /usr/share/locale/locale.alias ${BASE_LANG}
@@ -42,12 +42,12 @@ RUN echo "# Installing apt repositories...\n" \
   && echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
 
 # Add app user/group and append it to docker group
-RUN groupadd -r app  \ 
+RUN groupadd -r app  \
   && useradd --no-log-init -m -r -g app app \
   && usermod -aG docker app
 
 FROM base AS builder
-# Install hashicorp tools (terraform, packer) 
+# Install hashicorp tools (terraform, packer)
 RUN echo "# Installing binary packages...\n" \
     && echo "## Download terraform ${BASE_TERRAFORM_VERSION}..." \
     && curl -LsS "https://releases.hashicorp.com/terraform/${BASE_TERRAFORM_VERSION}/terraform_${BASE_TERRAFORM_VERSION}_linux_amd64.zip" \
@@ -75,6 +75,6 @@ COPY requirements.txt /root/requirement.txt
 RUN python3 -m pip install --no-cache -U pip setuptools wheel dumb-init~=1.2 \
   && python3 -m pip install -r /root/requirement.txt \
   && apt-get -y remove --purge build-essential python3-dev libssl-dev \
-  && apt-get -y autoremove \ 
+  && apt-get -y autoremove \
   && rm -rf /var/lib/apt/lists/*
 ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/bin/bash", "-l" ]
