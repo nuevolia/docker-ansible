@@ -3,7 +3,7 @@ dist: minimal
 services: docker
 env:
   global:
-    - DOCKER_ORGANISATION: nuevolia    
+    - DOCKER_ORGANISATION: nuevolia
     - DOCKER_REPOSITORY: java
   matrix:
     - DOCKER_BASE_IMAGE: centos7
