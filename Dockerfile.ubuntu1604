@@ -72,7 +72,7 @@ RUN set -xe \
   && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install build-essential python3-dev libssl-dev
 COPY --from=builder /install/bin /usr/local/bin
 COPY requirements.txt /root/requirement.txt
-RUN python3 -m pip install --no-cache -U pip setuptools wheel dumb-init~=1.2 \
+RUN python3 -m pip install --no-cache -U pip setuptools wheel dumb-init \
   && python3 -m pip install -r /root/requirement.txt \
   && apt-get -y remove --purge build-essential python3-dev libssl-dev \
   && apt-get -y autoremove \
