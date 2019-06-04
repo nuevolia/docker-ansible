@@ -64,7 +64,11 @@ RUN echo "# Installing binary packages...\n" \
     && echo "## Install docker-compose (${BASE_DOCKER_COMPOSE_VERSION})" \
     && curl -LsS "https://github.com/docker/compose/releases/download/${BASE_DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" \
       -o /install/bin/docker-compose \
-    && chmod +x /install/bin/docker-compose
+    && chmod +x /install/bin/docker-compose \
+    && curl -LsS  https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 \
+      -o /usr/local/bin/dumb-init \
+    && chmod +x /usr/local/bin/dumb-init
+
 
 FROM base
 RUN set -xe \
