@@ -36,6 +36,9 @@ RUN pip3 install -r /root/requirement.txt \
   && mkdir -p /etc/ansible \
   && echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts \
   && yum clean all
+  
+RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 \
+  && chmod +x /usr/local/bin/dumb-init
 
 VOLUME ["/sys/fs/cgroup"]
 ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/bin/bash", "-l" ]
