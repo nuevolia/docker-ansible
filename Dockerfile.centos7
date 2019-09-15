@@ -23,6 +23,7 @@ RUN mkdir -p /usr/share/info \
       which \
       python36 \
       python36-devel \
+      wget \
       @development \
   && python3 -m ensurepip \
   && python3 -m pip install --upgrade pip setuptools wheel
