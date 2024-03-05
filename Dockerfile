@@ -4,7 +4,7 @@ LABEL maintainer="Fabien Zarifian"
 ENV container=docker
 
 RUN groupadd -r ansible --gid=980 \
-  && useradd -r -g ansible --uid=980 --home-dir=/home/ansible --shell=/bin/bash ansible \
+  && useradd -r -g ansible --uid=980 --home-dir=/home/ansible --shell=/bin/bash --create-home ansible \
   && dnf -y update \
   && dnf -y install \
       sudo \
