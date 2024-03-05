@@ -3,8 +3,8 @@ LABEL maintainer="Fabien Zarifian"
 
 ENV container=docker
 
-RUN groupadd -r ansible --gid=999 \
-  useradd -r -g ansible --uid=999 --home-dir=/home/ansible --shell=/bin/bash ansible \
+RUN groupadd -r ansible --gid=980exex \
+  useradd -r -g ansible --uid=980 --home-dir=/home/ansible --shell=/bin/bash ansible \
   && dnf -y update \
   && dnf -y install \
       sudo \
