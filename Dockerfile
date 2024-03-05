@@ -3,7 +3,9 @@ LABEL maintainer="Fabien Zarifian"
 
 ENV container=docker
 
-RUN dnf -y update \
+RUN groupadd -r ansible --gid=999 \
+  useradd -r -g ansible --uid=999 --home-dir=/home/ansible --shell=/bin/bash ansible \
+  && dnf -y update \
   && dnf -y install \
       sudo \
       python3 \
@@ -24,4 +26,5 @@ RUN pip3 install -r /root/requirement.txt \
 RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 \
   && chmod +x /usr/local/bin/dumb-init
 
+USER ansible
 ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/bin/bash", "-l" ]
