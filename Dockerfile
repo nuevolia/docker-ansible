@@ -30,4 +30,5 @@ RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/
   && chmod +x /usr/local/bin/dumb-init
 
 USER ansible
+WORKDIR /home/ansible
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
