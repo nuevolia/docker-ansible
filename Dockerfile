@@ -7,7 +7,6 @@ RUN groupadd -r ansible --gid=980 \
   && useradd -r -g ansible --uid=980 --home-dir=/home/ansible --shell=/bin/bash --create-home ansible \
   && dnf -y update \
   && dnf -y install \
-      sudo \
       python3 \
       python3-devel \
       wget \
@@ -24,9 +23,10 @@ USER root
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers \
   && mkdir -p /etc/ansible \
   && echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts \
-  && dnf remove gcc && dnf clean all \
-  && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 \
-  && chmod +x /usr/local/bin/dumb-init
+  && dnf remove gcc && dnf clean all
+
+ADD https://github.com/fpco/pid1/releases/download/v0.1.3.1/pid1 /usr/bin/pid1
+RUN chmod +x /usr/bin/pid1
 
 USER ansible
-ENTRYPOINT [ "/usr/local/bin/dumb-init", "--", "/bin/bash", "-l" ]
+ENTRYPOINT [ "pid1" ]
