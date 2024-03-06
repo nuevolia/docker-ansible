@@ -2,7 +2,7 @@
 
 [![Docker Automated build](https://img.shields.io/docker/automated/nuevolia/docker-ansible.svg?maxAge=2592000)](https://hub.docker.com/r/nuevolia/docker-ansible/)
 
-CentOS 7 Docker container for Ansible playbook and role testing.
+Universal Base Image 9 (ubi9) Docker container for Ansible playbook and role testing.
 
 ## How to Build
 
