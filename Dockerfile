@@ -11,6 +11,7 @@ RUN groupadd -r ansible --gid=980 \
       python3-devel \
       wget \
       gcc \
+      git \
   && python3 -m ensurepip \
   && python3 -m pip install --upgrade pip setuptools wheel
 
