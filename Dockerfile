@@ -25,8 +25,8 @@ RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers \
   && echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts \
   && dnf remove gcc && dnf clean all
 
-ADD https://github.com/fpco/pid1/releases/download/v0.1.3.1/pid1 /usr/bin/pid1
-RUN chmod +x /usr/bin/pid1
+RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 \
+  && chmod +x /usr/local/bin/dumb-init
 
 USER ansible
-ENTRYPOINT [ "pid1" ]
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
